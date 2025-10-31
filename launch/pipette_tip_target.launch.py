@@ -1,0 +1,22 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from moveit_configs_utils import MoveItConfigsBuilder
+import launch_ros.actions
+
+def generate_launch_description():
+    moveit_config = MoveItConfigsBuilder("titration_robot_cell").to_moveit_configs()
+    launch_ros.actions.SetParameter(name='use_sim_time', value=True)
+    tutorial_node = Node(
+        package="titration_robot_cell_moveit_control",
+        executable="pipette_tip_target",
+        output="screen",
+        parameters=[
+            {"use_sim_time": True},
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+        ],
+
+    )
+
+    return LaunchDescription([tutorial_node])

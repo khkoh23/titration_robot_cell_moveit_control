@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 	moveit::planning_interface::MoveGroupInterface::Plan my_plan;
         auto node = rclcpp::Node::make_shared("JointSpacePlanning");
 	moveit::planning_interface::MoveGroupInterface move_group(node, "ur_arm");
-	std::vector<double> des_joint_pos = {0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0};
+	std::vector<double> des_joint_pos = {0.0, -1.5708, -1.5708, -1.5708, 1.5708, 0.0};
 
 	bool within_bounds = move_group.setJointValueTarget(des_joint_pos);
 	if( !within_bounds ) {
@@ -22,17 +22,17 @@ int main(int argc, char** argv) {
 	if (success)
 		move_group.move(); 
 
-	sleep(3);
+	// sleep(3);
 
-	des_joint_pos = {0.0, -1.5708, 0.0, 0, 0.0, 0.0};
+	// des_joint_pos = {0.0, -1.5708, 0.0, 0, 0.0, 0.0};
 
-	within_bounds = move_group.setJointValueTarget(des_joint_pos);
+	// within_bounds = move_group.setJointValueTarget(des_joint_pos);
 
-	move_group.setMaxVelocityScalingFactor(1.0);
-	move_group.setMaxAccelerationScalingFactor(1.0);
+	// move_group.setMaxVelocityScalingFactor(1.0);
+	// move_group.setMaxAccelerationScalingFactor(1.0);
 
-	success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-	if (success)
-		move_group.move(); 
+	// success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+	// if (success)
+	// 	move_group.move(); 
 
 }

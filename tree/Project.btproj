@@ -3,32 +3,19 @@
     <include path="titration_task.xml"/>
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
-        <Action ID="MovePoseA1" editable="true">
-            <input_port name="position_x" default="0.225"/>
-            <input_port name="position_y" default="-0.225"/>
-            <input_port name="position_z" default="1.100"/>
-            <input_port name="orientation_w" default="0.0000"/>
-            <input_port name="orientation_x" default="0.7071"/>
-            <input_port name="orientation_y" default="0.7071"/>
-            <input_port name="orientation_z" default="0.0000"/>
+        <Action ID="Aspire" editable="true"/>
+        <Action ID="DispenseStepVolume" editable="true"/>
+        <Condition ID="IsPipetteEmpty" editable="true"/>
+        <Condition ID="IsStateNormal" editable="true"/>
+        <Condition ID="IsTaskAbort" editable="true"/>
+        <Condition ID="IsTitrationDone" editable="true"/>
+        <Action ID="MovePose" editable="true">
+            <input_port name="position_x"/>
+            <input_port name="position_y"/>
+            <input_port name="position_z"/>
         </Action>
-        <Action ID="MovePoseA2" editable="true">
-            <input_port name="position_x" default="0.225"/>
-            <input_port name="position_y" default="-0.225"/>
-            <input_port name="position_z" default="0.860"/>
-            <input_port name="orientation_w" default="0.0000"/>
-            <input_port name="orientation_x" default="0.7071"/>
-            <input_port name="orientation_y" default="0.7071"/>
-            <input_port name="orientation_z" default="0.0000"/>
-        </Action>
-        <Action ID="MovePoseReady" editable="true">
-            <input_port name="position_x" default="0.225"/>
-            <input_port name="position_y" default="0.000"/>
-            <input_port name="position_z" default="1.100"/>
-            <input_port name="orientation_w" default="0.0000"/>
-            <input_port name="orientation_x" default="0.7071"/>
-            <input_port name="orientation_y" default="0.7071"/>
-            <input_port name="orientation_z" default="0.0000"/>
+        <Action ID="MoveState" editable="true">
+            <input_port name="group_state"/>
         </Action>
     </TreeNodesModel>
 </root>

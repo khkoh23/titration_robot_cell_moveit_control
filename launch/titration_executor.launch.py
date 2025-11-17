@@ -8,7 +8,7 @@ def generate_launch_description():
     
     bt_node = Node(
         package='titration_robot_cell_moveit_control',
-        executable='titration_task',
+        executable='titration_executor',
         output='screen',
         parameters=[{'tree_xml_file': tree_path}],
     )

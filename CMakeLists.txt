@@ -11,7 +11,10 @@ find_package(geometry_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(titration_robot_interfaces REQUIRED)
+
+include_directories(include)
 
 add_executable(move_pose_server src/move_pose_server.cpp)
 ament_target_dependencies(move_pose_server
@@ -28,20 +31,30 @@ ament_target_dependencies(move_state_server
   rclcpp_action
   titration_robot_interfaces)
 
-add_executable(titration_task src/titration_task.cpp)
-ament_target_dependencies(titration_task
+# add_executable(titration_task src/titration_task.cpp)
+# ament_target_dependencies(titration_task
+#   behaviortree_cpp
+#   geometry_msgs
+#   moveit_ros_planning_interface
+#   rclcpp
+#   rclcpp_action
+#   sensor_msgs
+#   titration_robot_interfaces)
+
+add_executable(titration_executor 
+  src/titration_executor.cpp)
+ament_target_dependencies(titration_executor 
   behaviortree_cpp
-  geometry_msgs
-  moveit_ros_planning_interface
   rclcpp
   rclcpp_action
+  sensor_msgs
   titration_robot_interfaces)
 
-
 install(TARGETS 
+  titration_executor
   move_pose_server
   move_state_server
-  titration_task
+  # titration_task
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY

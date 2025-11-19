@@ -12,7 +12,8 @@
                 position_y="0.200"
                 position_z="1.000"/>
       <ReactiveFallback>
-        <IsTitrationDone/>
+        <IsTitrationDone ph_target="7.00"
+                         ph_tolerance="0.20"/>
         <IsPipetteEmpty/>
         <DispenseStepVolume/>
       </ReactiveFallback>
@@ -49,19 +50,23 @@
                    group_state="normal"/>
       </Fallback>
       <Fallback>
-        <IsTitrationDone/>
+        <IsTitrationDone ph_target="7.00"
+                         ph_tolerance="0.20"/>
         <SubTree ID="ReplenishPipette"/>
       </Fallback>
       <Fallback>
-        <IsTitrationDone/>
+        <IsTitrationDone ph_target="7.00"
+                         ph_tolerance="0.20"/>
         <SubTree ID="MoveDispense"/>
       </Fallback>
       <Fallback>
-        <IsTitrationDone/>
-        <Sequence>
-          <MoveState name="MoveStateNormal"
-                     group_state="normal"/>
-        </Sequence>
+        <Inverter>
+          <IsTitrationDone ph_target="7.00"
+                           ph_tolerance="0.20"/>
+        </Inverter>
+        <IsStateNormal/>
+        <MoveState name="MoveStateNormal"
+                   group_state="normal"/>
       </Fallback>
     </Sequence>
   </BehaviorTree>
@@ -77,7 +82,12 @@
     <Condition ID="IsStateNormal"
                editable="true"/>
     <Condition ID="IsTitrationDone"
-               editable="true"/>
+               editable="true">
+      <input_port name="ph_target"
+                  default="7.00"/>
+      <input_port name="ph_tolerance"
+                  default="0.20"/>
+    </Condition>
     <Action ID="MovePose"
             editable="true">
       <input_port name="position_x"/>

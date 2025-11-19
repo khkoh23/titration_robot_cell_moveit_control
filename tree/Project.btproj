@@ -8,7 +8,10 @@
         <Condition ID="IsPipetteEmpty" editable="true"/>
         <Condition ID="IsStateNormal" editable="true"/>
         <Condition ID="IsTaskAbort" editable="true"/>
-        <Condition ID="IsTitrationDone" editable="true"/>
+        <Condition ID="IsTitrationDone" editable="true">
+            <input_port name="ph_target" default="7.00"/>
+            <input_port name="ph_tolerance" default="0.20"/>
+        </Condition>
         <Action ID="MovePose" editable="true">
             <input_port name="position_x"/>
             <input_port name="position_y"/>

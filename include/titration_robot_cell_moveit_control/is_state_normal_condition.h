@@ -25,8 +25,6 @@ public:
 
     static BT::PortsList providedPorts() {
         return {
-            // BT::InputPort<std::string>("joint_name", "joint_1", "Joint to check"),
-            // BT::InputPort<double>("position_threshold", 0.1, "Threshold for position")
         };
     }
 
@@ -37,16 +35,13 @@ public:
             "[%s] Waiting for /joint_states...", name().c_str());
             return BT::NodeStatus::RUNNING;
         }
-
         const auto& js = *last_joint_state_;
-
         // Basic sanity checks
         if (js.position.size() < normal_.size()) {
             RCLCPP_ERROR(node_->get_logger(), "[%s] Received %zu joint positions, but expected at least %zu.", 
             name().c_str(), js.position.size(), normal_.size());
             return BT::NodeStatus::FAILURE;
         }
-
         // Compare first N joints against the fixed normal_ vector (index-based match)
         for (size_t i = 0; i < normal_.size(); ++i) {
             const double actual = js.position[i];
@@ -66,13 +61,12 @@ private:
     rclcpp::Node::SharedPtr node_;
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr subscriber_;
     sensor_msgs::msg::JointState::SharedPtr last_joint_state_;
-    std::mutex mutex_; // Protects last_joint_state_ from concurrent access
+    std::mutex mutex_;
 
-    // Normal pose in radians (6 DOF)
-    static constexpr std::array<double, 6> normal_ = {
-        -1.5708, -1.5708, 0.0000, -1.5708,  1.5708, 0.0000
+    // joint values corresponding to "normal" group state name in SRDF
+    static constexpr std::array<double, 6> normal_ = { 
+        -1.5708, -1.5708, 0.0000, -1.5708,  1.5708, 3.1416
     };
-
     // Per-joint absolute tolerance (radians)
     static constexpr double kToleranceRad_ = 0.02; // ≈ 1.15°
 

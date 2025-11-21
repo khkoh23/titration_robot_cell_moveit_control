@@ -70,8 +70,8 @@ private:
 
     void configureOnce() { // Read ports once (first tick) and cache
         if (configured_) return;
-        (void)getInput<float>("ph target", ph_target_);
-        (void)getInput<float>("ph tolerance", ph_tolerance_);
+        (void)getInput<float>("ph_target", ph_target_);
+        (void)getInput<float>("ph_tolerance", ph_tolerance_);
         configured_ = true;
     }
 

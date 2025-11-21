@@ -11,25 +11,26 @@
                 position_x="0.225"
                 position_y="0.200"
                 position_z="1.050"/>
-      <Parallel failure_count="2"
-                success_count="1">
-        <IsTitrationDone ph_target="7.00"
-                         ph_tolerance="0.20"/>
-        <Sequence>
+      <ForceSuccess>
+        <ReactiveSequence>
+          <Inverter>
+            <IsTitrationDone ph_target="7.00"
+                             ph_tolerance="0.20"/>
+          </Inverter>
           <RetryUntilSuccessful num_attempts="-1">
             <Sequence>
               <Dispense/>
               <IsPipetteEmpty/>
             </Sequence>
           </RetryUntilSuccessful>
-          <Delay delay_msec="1000">
-            <MovePose name="MovePoseB1"
-                      position_x="0.225"
-                      position_y="0.200"
-                      position_z="1.100"/>
-          </Delay>
-        </Sequence>
-      </Parallel>
+        </ReactiveSequence>
+      </ForceSuccess>
+      <Delay delay_msec="1000">
+        <MovePose name="MovePoseB1"
+                  position_x="0.225"
+                  position_y="0.200"
+                  position_z="1.100"/>
+      </Delay>
     </Sequence>
   </BehaviorTree>
 
@@ -55,11 +56,13 @@
 
   <BehaviorTree ID="titration_task">
     <Sequence name="TitrationTask">
-      <Fallback>
-        <IsStateNormal/>
-        <MoveState name="MoveStateNormal"
-                   group_state="normal"/>
-      </Fallback>
+      <RunOnce then_skip="true">
+        <Fallback>
+          <IsStateNormal/>
+          <MoveState name="MoveStateNormal"
+                     group_state="normal"/>
+        </Fallback>
+      </RunOnce>
       <Fallback>
         <IsTitrationDone ph_target="7.00"
                          ph_tolerance="0.20"/>
@@ -71,13 +74,16 @@
         <SubTree ID="MoveDispense"/>
       </Fallback>
       <Fallback>
-        <Inverter>
+        <IfThenElse>
           <IsTitrationDone ph_target="7.00"
                            ph_tolerance="0.20"/>
-        </Inverter>
-        <IsStateNormal/>
-        <MoveState name="MoveStateNormal"
-                   group_state="normal"/>
+          <Fallback>
+            <IsStateNormal/>
+            <MoveState name="MoveStateNormal"
+                       group_state="normal"/>
+          </Fallback>
+          <AlwaysSuccess/>
+        </IfThenElse>
       </Fallback>
     </Sequence>
   </BehaviorTree>

@@ -17,22 +17,27 @@
 #include "titration_robot_cell_moveit_control/move_state_action.h"
 #include "titration_robot_cell_moveit_control/move_pose_action.h"
 #include "titration_robot_cell_moveit_control/is_titration_done_condition.h"
+#include "titration_robot_cell_moveit_control/aspire_action.h"
+#include "titration_robot_cell_moveit_control/dispense_action.h"
+#include "titration_robot_cell_moveit_control/is_pipette_empty_condition.h"
 
 // BT::NodeStatus IsTitrationDone() {
 //     return BT::NodeStatus::FAILURE;
 // }
 
-BT::NodeStatus IsPipetteEmpty() {
-    return BT::NodeStatus::SUCCESS;
-}
+// BT::NodeStatus IsPipetteEmpty() {
+//     static int count = 0;
+//     if (++count >= 3) return BT::NodeStatus::SUCCESS; // empty after 3 dispenses
+//     return BT::NodeStatus::FAILURE;
+// }
 
-BT::NodeStatus DispenseStepVolume() {
-    return BT::NodeStatus::SUCCESS;
-}
+// BT::NodeStatus Dispense() {
+//     return BT::NodeStatus::SUCCESS;
+// }
 
-BT::NodeStatus Aspire() {
-    return BT::NodeStatus::SUCCESS;
-}
+// BT::NodeStatus Aspire() {
+//     return BT::NodeStatus::SUCCESS;
+// }
 
 class BTExecutor : public rclcpp::Node {
 public:
@@ -61,15 +66,27 @@ public:
             });
         
         // factory_.registerSimpleCondition("IsTitrationDone", std::bind(IsTitrationDone));
-        
         factory_.registerBuilder<IsTitrationDoneCondition>("IsTitrationDone", 
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<IsTitrationDoneCondition>(name, config, shared_this);
             });
 
-        factory_.registerSimpleCondition("IsPipetteEmpty", std::bind(IsPipetteEmpty));
-        factory_.registerSimpleAction("DispenseStepVolume", std::bind(DispenseStepVolume));
-        factory_.registerSimpleAction("Aspire", std::bind(Aspire));
+        // factory_.registerSimpleCondition("IsPipetteEmpty", std::bind(IsPipetteEmpty));
+        factory_.registerBuilder<IsPipetteEmptyCondition>("IsPipetteEmpty", 
+            [&](const std::string& name, const BT::NodeConfiguration& config) {
+                return std::make_unique<IsPipetteEmptyCondition>(name, config, shared_this);
+            });
+        // factory_.registerSimpleAction("Dispense", std::bind(Dispense));
+        factory_.registerBuilder<DispenseAction>("Dispense",
+            [&](const std::string& name, const BT::NodeConfiguration& config) {
+                return std::make_unique<DispenseAction>(name, config, shared_this);
+            });
+
+        // factory_.registerSimpleAction("Aspire", std::bind(Aspire));
+        factory_.registerBuilder<AspireAction>("Aspire",
+            [&](const std::string& name, const BT::NodeConfiguration& config) {
+                return std::make_unique<AspireAction>(name, config, shared_this);
+            });
         
         this->declare_parameter<std::string>("tree_xml_file", "");
         std::string tree_file;

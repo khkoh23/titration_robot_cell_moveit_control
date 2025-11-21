@@ -17,6 +17,12 @@ find_package(titration_robot_interfaces REQUIRED)
 
 include_directories(include)
 
+add_executable(pipette_server src/pipette_server.cpp)
+ament_target_dependencies(pipette_server
+  rclcpp
+  std_msgs
+  titration_robot_interfaces)
+
 add_executable(move_pose_server src/move_pose_server.cpp)
 ament_target_dependencies(move_pose_server
   geometry_msgs
@@ -32,16 +38,6 @@ ament_target_dependencies(move_state_server
   rclcpp_action
   titration_robot_interfaces)
 
-# add_executable(titration_task src/titration_task.cpp)
-# ament_target_dependencies(titration_task
-#   behaviortree_cpp
-#   geometry_msgs
-#   moveit_ros_planning_interface
-#   rclcpp
-#   rclcpp_action
-#   sensor_msgs
-#   titration_robot_interfaces)
-
 add_executable(titration_executor 
   src/titration_executor.cpp)
 ament_target_dependencies(titration_executor 
@@ -53,9 +49,9 @@ ament_target_dependencies(titration_executor
 
 install(TARGETS 
   titration_executor
+  pipette_server
   move_pose_server
   move_state_server
-  # titration_task
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY

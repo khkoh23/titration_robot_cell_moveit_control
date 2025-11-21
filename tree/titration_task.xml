@@ -10,17 +10,26 @@
       <MovePose name="MovePoseB2"
                 position_x="0.225"
                 position_y="0.200"
-                position_z="1.000"/>
-      <ReactiveFallback>
+                position_z="1.050"/>
+      <Parallel failure_count="2"
+                success_count="1">
         <IsTitrationDone ph_target="7.00"
                          ph_tolerance="0.20"/>
-        <IsPipetteEmpty/>
-        <DispenseStepVolume/>
-      </ReactiveFallback>
-      <MovePose name="MovePoseB1"
-                position_x="0.225"
-                position_y="0.200"
-                position_z="1.100"/>
+        <Sequence>
+          <RetryUntilSuccessful num_attempts="-1">
+            <Sequence>
+              <Dispense/>
+              <IsPipetteEmpty/>
+            </Sequence>
+          </RetryUntilSuccessful>
+          <Delay delay_msec="1000">
+            <MovePose name="MovePoseB1"
+                      position_x="0.225"
+                      position_y="0.200"
+                      position_z="1.100"/>
+          </Delay>
+        </Sequence>
+      </Parallel>
     </Sequence>
   </BehaviorTree>
 
@@ -35,10 +44,12 @@
                 position_y="-0.225"
                 position_z="0.860"/>
       <Aspire/>
-      <MovePose name="MovePoseA1"
-                position_x="0.225"
-                position_y="-0.225"
-                position_z="1.100"/>
+      <Delay delay_msec="1000">
+        <MovePose name="MovePoseA1"
+                  position_x="0.225"
+                  position_y="-0.225"
+                  position_z="1.100"/>
+      </Delay>
     </Sequence>
   </BehaviorTree>
 
@@ -75,7 +86,7 @@
   <TreeNodesModel>
     <Action ID="Aspire"
             editable="true"/>
-    <Action ID="DispenseStepVolume"
+    <Action ID="Dispense"
             editable="true"/>
     <Condition ID="IsPipetteEmpty"
                editable="true"/>

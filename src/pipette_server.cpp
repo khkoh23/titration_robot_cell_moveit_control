@@ -1,6 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/int8.hpp>
 #include <std_msgs/msg/u_int16.hpp>
+#include <std_msgs/msg/u_int32.hpp>
 #include <titration_robot_interfaces/srv/pipette.hpp>
 
 #include <memory>
@@ -18,6 +19,8 @@ public:
             rclcpp::QoS(1).reliable().transient_local());
         pipette_step_vol_pub_ = this->create_publisher<std_msgs::msg::UInt16>("pipette_step_vol", 
             rclcpp::QoS(1).reliable().transient_local());
+        titration_vol_pub_ = this->create_publisher<std_msgs::msg::UInt32>("titration_vol", 
+            rclcpp::QoS(1).reliable().transient_local());
         this->service_server_ = this->create_service<Pipette>(
             "pipette", 
             std::bind(&PipetteServiceServer::handle_request, this, _1, _2)
@@ -30,10 +33,12 @@ private:
     rclcpp::Publisher<std_msgs::msg::Int8>::SharedPtr pipette_cmd_pub_;
     rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr pipette_set_vol_pub_;
     rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr pipette_step_vol_pub_;
+    rclcpp::Publisher<std_msgs::msg::UInt32>::SharedPtr titration_vol_pub_;
     const int16_t capacity_volume_ = 2200; // maximum 220.0 uL pipette tip volume
     int16_t holding_volume_ = 0; // curent liquid held by the pipette
     uint16_t aspire_volume_ = 2000; // 200.0 uL
     uint16_t dispense_volume_ = 200; // 20.0 uL
+    uint32_t titration_volume = 0;
 
     inline void help_publish_int8(rclcpp::Publisher<std_msgs::msg::Int8>::SharedPtr pub, int8_t value) {
         std_msgs::msg::Int8 msg;
@@ -43,6 +48,12 @@ private:
 
     inline void help_publish_uint16(rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr pub, uint16_t value) {
         std_msgs::msg::UInt16 msg;
+        msg.data = value;
+        pub->publish(msg);
+    }
+
+    inline void help_publish_uint32(rclcpp::Publisher<std_msgs::msg::UInt32>::SharedPtr pub, uint16_t value) {
+        std_msgs::msg::UInt32 msg;
         msg.data = value;
         pub->publish(msg);
     }
@@ -69,6 +80,8 @@ private:
                 if (holding_volume_ >= dispense_volume_) {
                     holding_volume_ -= dispense_volume_;
                     help_publish_int8(pipette_cmd_pub_, 9);
+                    titration_volume += dispense_volume_;
+                    help_publish_uint32(titration_vol_pub_, titration_volume);
                     RCLCPP_INFO(this->get_logger(), "Dispensed. Holding volume: %d/%d.", holding_volume_, capacity_volume_);
                 }
                 else RCLCPP_WARN(this->get_logger(), "Dispense failed: Holding volume %d is lesser than dispense step volume %d.", holding_volume_, dispense_volume_);

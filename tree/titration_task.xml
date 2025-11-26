@@ -1,59 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4"
       main_tree_to_execute="titration_task">
-  <BehaviorTree ID="MoveDispense">
-    <Sequence>
-      <MovePose name="MovePoseB1"
-                position_x="0.225"
-                position_y="0.200"
-                position_z="1.100"/>
-      <MovePose name="MovePoseB2"
-                position_x="0.225"
-                position_y="0.200"
-                position_z="1.050"/>
-      <ForceSuccess>
-        <ReactiveSequence>
-          <Inverter>
-            <IsTitrationDone ph_target="7.00"
-                             ph_tolerance="0.20"/>
-          </Inverter>
-          <RetryUntilSuccessful num_attempts="-1">
-            <Sequence>
-              <Dispense/>
-              <IsPipetteEmpty/>
-            </Sequence>
-          </RetryUntilSuccessful>
-        </ReactiveSequence>
-      </ForceSuccess>
-      <Delay delay_msec="1000">
-        <MovePose name="MovePoseB1"
-                  position_x="0.225"
-                  position_y="0.200"
-                  position_z="1.100"/>
-      </Delay>
-    </Sequence>
-  </BehaviorTree>
-
-  <BehaviorTree ID="ReplenishPipette">
-    <Sequence>
-      <MovePose name="MovePoseA1"
-                position_x="0.225"
-                position_y="-0.225"
-                position_z="1.100"/>
-      <MovePose name="MovePoseA2"
-                position_x="0.225"
-                position_y="-0.225"
-                position_z="0.860"/>
-      <Aspire/>
-      <Delay delay_msec="1000">
-        <MovePose name="MovePoseA1"
-                  position_x="0.225"
-                  position_y="-0.225"
-                  position_z="1.100"/>
-      </Delay>
-    </Sequence>
-  </BehaviorTree>
-
   <BehaviorTree ID="titration_task">
     <Sequence name="TitrationTask">
       <RunOnce then_skip="true">
@@ -64,19 +11,87 @@
         </Fallback>
       </RunOnce>
       <Fallback>
-        <IsTitrationDone ph_target="7.00"
-                         ph_tolerance="0.20"/>
-        <SubTree ID="ReplenishPipette"/>
+        <CheckPhByRange ph_min="7.01"
+                        ph_max="14.00"/>
+        <Sequence>
+          <MovePose name="MovePoseA1"
+                    position_x="0.225"
+                    position_y="-0.225"
+                    position_z="1.100"/>
+          <MovePose name="MovePoseA2"
+                    position_x="0.225"
+                    position_y="-0.225"
+                    position_z="0.860"/>
+          <Aspire/>
+          <Delay delay_msec="1000">
+            <MovePose name="MovePoseA1"
+                      position_x="0.225"
+                      position_y="-0.225"
+                      position_z="1.100"/>
+          </Delay>
+        </Sequence>
       </Fallback>
       <Fallback>
-        <IsTitrationDone ph_target="7.00"
-                         ph_tolerance="0.20"/>
-        <SubTree ID="MoveDispense"/>
+        <CheckPhByRange ph_min="7.01"
+                        ph_max="14.00"/>
+        <Sequence>
+          <MovePose name="MovePoseB1"
+                    position_x="0.225"
+                    position_y="0.200"
+                    position_z="1.100"/>
+          <MovePose name="MovePoseB2"
+                    position_x="0.225"
+                    position_y="0.200"
+                    position_z="1.050"/>
+          <ForceSuccess>
+            <ReactiveSequence>
+              <Inverter>
+                <CheckPhByRange ph_min="7.01"
+                                ph_max="14.00"/>
+              </Inverter>
+              <RetryUntilSuccessful num_attempts="-1">
+                <Sequence>
+                  <IfThenElse>
+                    <CheckPhByRange ph_min="0.01"
+                                    ph_max="5.00"/>
+                    <Delay delay_msec="500">
+                      <Dispense/>
+                    </Delay>
+                    <IfThenElse>
+                      <CheckPhByRange ph_min="5.01"
+                                      ph_max="6.00"/>
+                      <Delay delay_msec="2500">
+                        <Dispense/>
+                      </Delay>
+                      <IfThenElse>
+                        <CheckPhByRange ph_min="6.01"
+                                        ph_max="6.50"/>
+                        <Delay delay_msec="5500">
+                          <Dispense/>
+                        </Delay>
+                        <Delay delay_msec="8500">
+                          <Dispense/>
+                        </Delay>
+                      </IfThenElse>
+                    </IfThenElse>
+                  </IfThenElse>
+                  <IsPipetteEmpty/>
+                </Sequence>
+              </RetryUntilSuccessful>
+            </ReactiveSequence>
+          </ForceSuccess>
+          <Delay delay_msec="1000">
+            <MovePose name="MovePoseB1"
+                      position_x="0.225"
+                      position_y="0.200"
+                      position_z="1.100"/>
+          </Delay>
+        </Sequence>
       </Fallback>
       <Fallback>
         <IfThenElse>
-          <IsTitrationDone ph_target="7.00"
-                           ph_tolerance="0.20"/>
+          <CheckPhByRange ph_min="7.01"
+                          ph_max="14.00"/>
           <Fallback>
             <IsStateNormal/>
             <MoveState name="MoveStateNormal"
@@ -92,19 +107,17 @@
   <TreeNodesModel>
     <Action ID="Aspire"
             editable="true"/>
+    <Condition ID="CheckPhByRange"
+               editable="true">
+      <input_port name="ph_min"/>
+      <input_port name="ph_max"/>
+    </Condition>
     <Action ID="Dispense"
             editable="true"/>
     <Condition ID="IsPipetteEmpty"
                editable="true"/>
     <Condition ID="IsStateNormal"
                editable="true"/>
-    <Condition ID="IsTitrationDone"
-               editable="true">
-      <input_port name="ph_target"
-                  default="7.00"/>
-      <input_port name="ph_tolerance"
-                  default="0.20"/>
-    </Condition>
     <Action ID="MovePose"
             editable="true">
       <input_port name="position_x"/>

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4"
-      main_tree_to_execute="titration_task">
-  <BehaviorTree ID="titration_task">
-    <Sequence name="TitrationTask">
+      main_tree_to_execute="equivalence_point_titration">
+  <BehaviorTree ID="equivalence_point_titration">
+    <Sequence>
       <RunOnce then_skip="true">
         <Fallback>
           <IsStateNormal/>
-          <MoveState name="MoveStateNormal"
-                     group_state="normal"/>
+          <MoveState group_state="normal"/>
         </Fallback>
       </RunOnce>
       <Fallback>
-        <CheckPhByRange ph_min="7.01"
+        <CheckPhByRange ph_min="12.01"
                         ph_max="14.00"/>
         <Sequence>
           <MovePose name="MovePoseA1"
@@ -32,7 +31,7 @@
         </Sequence>
       </Fallback>
       <Fallback>
-        <CheckPhByRange ph_min="7.01"
+        <CheckPhByRange ph_min="12.01"
                         ph_max="14.00"/>
         <Sequence>
           <MovePose name="MovePoseB1"
@@ -46,32 +45,47 @@
           <ForceSuccess>
             <ReactiveSequence>
               <Inverter>
-                <CheckPhByRange ph_min="7.01"
+                <CheckPhByRange ph_min="12.01"
                                 ph_max="14.00"/>
               </Inverter>
               <RetryUntilSuccessful num_attempts="-1">
                 <Sequence>
                   <IfThenElse>
-                    <CheckPhByRange ph_min="0.01"
-                                    ph_max="5.00"/>
-                    <Delay delay_msec="500">
-                      <Dispense/>
-                    </Delay>
-                    <IfThenElse>
-                      <CheckPhByRange ph_min="5.01"
-                                      ph_max="6.00"/>
-                      <Delay delay_msec="2500">
+                    <CheckPhByDelta delta_min="0.01"
+                                    delta_max="0.30"
+                                    window_sec="2"/>
+                    <Sequence>
+                      <SetDispenseVolume volume="500"/>
+                      <Delay delay_msec="500">
                         <Dispense/>
                       </Delay>
+                    </Sequence>
+                    <IfThenElse>
+                      <CheckPhByDelta delta_min="0.31"
+                                      delta_max="0.6"
+                                      window_sec="2"/>
+                      <Sequence>
+                        <SetDispenseVolume volume="100"/>
+                        <Delay delay_msec="2500">
+                          <Dispense/>
+                        </Delay>
+                      </Sequence>
                       <IfThenElse>
-                        <CheckPhByRange ph_min="6.01"
-                                        ph_max="6.50"/>
-                        <Delay delay_msec="5500">
-                          <Dispense/>
-                        </Delay>
-                        <Delay delay_msec="8500">
-                          <Dispense/>
-                        </Delay>
+                        <CheckPhByDelta delta_min="0.61"
+                                        delta_max="0.9"
+                                        window_sec="2"/>
+                        <Sequence>
+                          <SetDispenseVolume volume="50"/>
+                          <Delay delay_msec="5500">
+                            <Dispense/>
+                          </Delay>
+                        </Sequence>
+                        <Sequence>
+                          <SetDispenseVolume volume="25"/>
+                          <Delay delay_msec="8500">
+                            <Dispense/>
+                          </Delay>
+                        </Sequence>
                       </IfThenElse>
                     </IfThenElse>
                   </IfThenElse>
@@ -90,7 +104,7 @@
       </Fallback>
       <Fallback>
         <IfThenElse>
-          <CheckPhByRange ph_min="7.01"
+          <CheckPhByRange ph_min="12.01"
                           ph_max="14.00"/>
           <Fallback>
             <IsStateNormal/>
@@ -107,6 +121,12 @@
   <TreeNodesModel>
     <Action ID="Aspire"
             editable="true"/>
+    <Condition ID="CheckPhByDelta"
+               editable="true">
+      <input_port name="delta_min"/>
+      <input_port name="delta_max"/>
+      <input_port name="window_sec"/>
+    </Condition>
     <Condition ID="CheckPhByRange"
                editable="true">
       <input_port name="ph_min"/>
@@ -127,6 +147,10 @@
     <Action ID="MoveState"
             editable="true">
       <input_port name="group_state"/>
+    </Action>
+    <Action ID="SetDispenseVolume"
+            editable="true">
+      <input_port name="volume"/>
     </Action>
   </TreeNodesModel>
 

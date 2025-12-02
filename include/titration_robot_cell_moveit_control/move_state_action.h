@@ -43,7 +43,7 @@ public:
             RCLCPP_ERROR(node_->get_logger(), "[%s] Exception while sending goal: %s", bt_node_name_.c_str(), e.what());
             return BT::NodeStatus::FAILURE;
         }
-        RCLCPP_INFO(node_->get_logger(), "[%s] Action goal for move_state is sent. Waiting for response...", bt_node_name_.c_str());
+//        RCLCPP_INFO(node_->get_logger(), "[%s] Action goal for move_state is sent. Waiting for response...", bt_node_name_.c_str());
         return BT::NodeStatus::RUNNING;
     }
 
@@ -95,7 +95,7 @@ public:
                 return BT::NodeStatus::FAILURE;
             }
             if (wrapped_result.code == rclcpp_action::ResultCode::SUCCEEDED) {
-                RCLCPP_INFO(node_->get_logger(), "[%s] Action goal for move_state succeeded!", bt_node_name_.c_str());
+//                RCLCPP_INFO(node_->get_logger(), "[%s] Action goal for move_state succeeded!", bt_node_name_.c_str());
                 clearGoalState();
                 return BT::NodeStatus::SUCCESS;
             } 

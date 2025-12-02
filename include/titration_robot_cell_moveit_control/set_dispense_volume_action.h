@@ -1,5 +1,5 @@
-#ifndef DISPENSE_ACTION_H
-#define DISPENSE_ACTION_H
+#ifndef SET_DISPENSE_VOLUME_ACTION_H
+#define SET_DISPENSE_VOLUME_ACTION_H
 
 #include <behaviortree_cpp/action_node.h>
 #include <rclcpp/rclcpp.hpp>
@@ -8,17 +8,21 @@
 #include <chrono>
 #include <future>
 
-class DispenseAction : public BT::StatefulActionNode {
+class SetDispenseVolumeAction : public BT::StatefulActionNode {
 public:
     using Pipette = titration_robot_interfaces::srv::Pipette;
 
-    DispenseAction(const std::string& name, const BT::NodeConfiguration& config, rclcpp::Node::SharedPtr node_ptr) 
+    SetDispenseVolumeAction(const std::string& name, const BT::NodeConfiguration& config, rclcpp::Node::SharedPtr node_ptr) 
     : BT::StatefulActionNode(name, config), node_(node_ptr) {
         bt_node_name_ = name;
         client_ = node_->create_client<Pipette>("pipette");
     }
 
     BT::NodeStatus onStart() override {
+        if (!getInput<uint16_t>(std::string("volume"), volume_)) {
+            RCLCPP_ERROR(node_->get_logger(), "[%s] Missing required input ports: volume", bt_node_name_.c_str());
+            return BT::NodeStatus::FAILURE;
+        }
         using namespace std::chrono_literals;
         RCLCPP_INFO(node_->get_logger(), "BT action %s is started.", bt_node_name_.c_str());
         if (!client_->wait_for_service(2s)) {
@@ -26,7 +30,8 @@ public:
             return BT::NodeStatus::FAILURE;
         }
         auto req_msg = std::make_shared<Pipette::Request>(); 
-        req_msg->command = 9;
+        req_msg->command = 91;
+        req_msg->dispense_volume = volume_;
         auto far = client_->async_send_request(req_msg); 
         future_ = far.future.share();
         start_time_ = std::chrono::steady_clock::now();
@@ -43,7 +48,7 @@ public:
         if (future_.valid() && future_.wait_for(0s) == std::future_status::ready) { 
             auto resp = future_.get();  // Response::SharedPtr
             // TODO: check any fields in resp to decide success/failure if the service defines them
-//            RCLCPP_INFO(node_->get_logger(), "[%s] Service request for pipette completed.", bt_node_name_.c_str());
+            RCLCPP_INFO(node_->get_logger(), "[%s] Service request for pipette completed.", bt_node_name_.c_str());
             return BT::NodeStatus::SUCCESS;
         }
         auto elapsed = std::chrono::steady_clock::now() - start_time_;
@@ -58,6 +63,7 @@ public:
 
     static BT::PortsList providedPorts() {
         return {
+            BT::InputPort<uint16_t>(std::string("volume")),
         };
     }
 
@@ -68,6 +74,8 @@ private:
     std::chrono::steady_clock::time_point start_time_{};
     std::string bt_node_name_;
 
+    uint16_t volume_;
+
 }; 
 
-#endif // DISPENSE_ACTION_H
+#endif // SET_DISPENSE_VOLUME_ACTION_H

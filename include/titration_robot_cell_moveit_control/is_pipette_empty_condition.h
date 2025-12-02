@@ -43,7 +43,7 @@ public:
             // Attempt to take a response; returns true if one was available.
             if (client_->take_response(resp_msg, resp_header)) {
                 const int hv = static_cast<int>(resp_msg.holding_volume);
-                RCLCPP_INFO(node_->get_logger(), "[%s] Fresh server response: holding_volume=%d (0.1uL).", bt_node_name_.c_str(), hv);
+//                RCLCPP_INFO(node_->get_logger(), "[%s] Fresh server response: holding_volume=%d (0.1uL).", bt_node_name_.c_str(), hv);
                 return (hv == 0) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
             }
             // No response yet; bail out if we exceeded max wait

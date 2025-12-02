@@ -1,5 +1,5 @@
-#ifndef BT_EXECUTOR_H
-#define BT_EXECUTOR_H
+#ifndef BT_EXECUTOR_ENDPOINT_H
+#define BT_EXECUTOR_ENDPOINT_H
 
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
@@ -16,7 +16,6 @@
 #include "titration_robot_cell_moveit_control/check_ph_by_range_condition.h"
 #include "titration_robot_cell_moveit_control/is_pipette_empty_condition.h"
 #include "titration_robot_cell_moveit_control/is_state_normal_condition.h"
-// #include "titration_robot_cell_moveit_control/is_titration_done_condition.h"
 #include "titration_robot_cell_moveit_control/aspire_action.h"
 #include "titration_robot_cell_moveit_control/dispense_action.h"
 #include "titration_robot_cell_moveit_control/move_pose_action.h"
@@ -24,7 +23,7 @@
 
 class BTExecutor : public rclcpp::Node {
 public:
-    BTExecutor() : Node("titration_executor") {
+    BTExecutor() : Node("endpoint_titration_executor") {
 
     }
 
@@ -45,10 +44,6 @@ public:
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<IsStateNormalCondition>(name, config, shared_this);
             });
-        // factory_.registerBuilder<IsTitrationDoneCondition>("IsTitrationDone", 
-        //     [&](const std::string& name, const BT::NodeConfiguration& config) {
-        //         return std::make_unique<IsTitrationDoneCondition>(name, config, shared_this);
-        //     });
         factory_.registerBuilder<AspireAction>("Aspire",
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<AspireAction>(name, config, shared_this);
@@ -98,4 +93,4 @@ private:
 
 }; 
 
-#endif // BT_EXECUTOR_H
+#endif // BT_EXECUTOR_ENDPOINT_H

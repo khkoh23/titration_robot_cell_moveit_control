@@ -23,6 +23,12 @@ ament_target_dependencies(pipette_server
   std_msgs
   titration_robot_interfaces)
 
+add_executable(delta_ph_server src/delta_ph_server.cpp)
+ament_target_dependencies(delta_ph_server
+  rclcpp
+  std_msgs
+  titration_robot_interfaces)
+
 add_executable(move_pose_server src/move_pose_server.cpp)
 ament_target_dependencies(move_pose_server
   geometry_msgs
@@ -38,9 +44,18 @@ ament_target_dependencies(move_state_server
   rclcpp_action
   titration_robot_interfaces)
 
-add_executable(titration_executor 
-  src/titration_executor.cpp)
-ament_target_dependencies(titration_executor 
+add_executable(endpoint_titration_executor 
+  src/endpoint_titration_executor.cpp)
+ament_target_dependencies(endpoint_titration_executor 
+  behaviortree_cpp
+  rclcpp
+  rclcpp_action
+  sensor_msgs
+  titration_robot_interfaces)
+
+add_executable(equivalence_point_titration_executor 
+  src/equivalence_point_titration_executor.cpp)
+ament_target_dependencies(equivalence_point_titration_executor 
   behaviortree_cpp
   rclcpp
   rclcpp_action
@@ -48,7 +63,9 @@ ament_target_dependencies(titration_executor
   titration_robot_interfaces)
 
 install(TARGETS 
-  titration_executor
+  endpoint_titration_executor
+  equivalence_point_titration_executor
+  delta_ph_server
   pipette_server
   move_pose_server
   move_state_server

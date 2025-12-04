@@ -97,6 +97,16 @@ private:
             case 123:
                 RCLCPP_INFO(this->get_logger(), "Response to holding volume enquiry: %d/%d.", holding_volume_, capacity_volume_);
                 break;
+            case 124:
+                if (dispense_volume_ > holding_volume_) {
+                    RCLCPP_WARN(this->get_logger(), "Yes to replenish ...");
+                    response->to_replenish = true;
+                }
+                else {
+                    RCLCPP_INFO(this->get_logger(), "No need to replenish.");
+                    response->to_replenish = false;
+                }
+                break;
             default:
                 RCLCPP_WARN(this->get_logger(), "Unknown command code: %d", static_cast<int>(request->command));
                 break;

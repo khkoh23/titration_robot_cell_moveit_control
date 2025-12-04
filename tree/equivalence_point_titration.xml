@@ -50,46 +50,41 @@
               </Inverter>
               <RetryUntilSuccessful num_attempts="-1">
                 <Sequence>
+                  <RetryUntilSuccessful num_attempts="-1">
+                    <IsPhStable delta_min="0.00"
+                                delta_max="0.03"
+                                window_sec="3"
+                                _description="If pH change is within 0.03 in the last 3 seconds (moving), then True."/>
+                  </RetryUntilSuccessful>
                   <IfThenElse>
-                    <CheckPhByDelta delta_min="0.01"
-                                    delta_max="0.30"
-                                    window_sec="2"/>
+                    <CheckDphDv criteria_min="0.0000"
+                                criteria_max="0.0005"
+                                _description="dpH / dV:&#10;If pH change is within 0.1 when volume of 200 (20uL) was added, then True."/>
                     <Sequence>
-                      <SetDispenseVolume volume="500"/>
-                      <Delay delay_msec="500">
-                        <Dispense/>
-                      </Delay>
+                      <SetDispenseVolume volume="200"/>
+                      <SetBlackboard value="500"
+                                     output_key="delay"/>
                     </Sequence>
                     <IfThenElse>
-                      <CheckPhByDelta delta_min="0.31"
-                                      delta_max="0.6"
-                                      window_sec="2"/>
+                      <CheckDphDv criteria_min="0.0006"
+                                  criteria_max="0.0010"
+                                  _description="dpH / dV:&#10;If pH change is below 0.1 when volume of 100 (10uL) was added, then True."/>
                       <Sequence>
                         <SetDispenseVolume volume="100"/>
-                        <Delay delay_msec="2500">
-                          <Dispense/>
-                        </Delay>
+                        <SetBlackboard value="2500"
+                                       output_key="delay"/>
                       </Sequence>
-                      <IfThenElse>
-                        <CheckPhByDelta delta_min="0.61"
-                                        delta_max="0.9"
-                                        window_sec="2"/>
-                        <Sequence>
-                          <SetDispenseVolume volume="50"/>
-                          <Delay delay_msec="5500">
-                            <Dispense/>
-                          </Delay>
-                        </Sequence>
-                        <Sequence>
-                          <SetDispenseVolume volume="25"/>
-                          <Delay delay_msec="8500">
-                            <Dispense/>
-                          </Delay>
-                        </Sequence>
-                      </IfThenElse>
+                      <Sequence>
+                        <SetDispenseVolume volume="50"/>
+                        <SetBlackboard value="4500"
+                                       output_key="delay"/>
+                      </Sequence>
                     </IfThenElse>
                   </IfThenElse>
-                  <IsPipetteEmpty/>
+                  <Delay delay_msec="{delay}">
+                    <Dispense/>
+                  </Delay>
+                  <IsToReplenishPipette/>
                 </Sequence>
               </RetryUntilSuccessful>
             </ReactiveSequence>
@@ -117,15 +112,28 @@
     </Sequence>
   </BehaviorTree>
 
+  <BehaviorTree ID="test_and_discard">
+    <IfThenElse>
+      <IsPhStable delta_min="1.1"
+                  delta_max="2.0"
+                  window_sec="2"/>
+      <Sequence>
+        <SetDispenseVolume volume="50"/>
+      </Sequence>
+      <Delay delay_msec="2500">
+        <AlwaysSuccess/>
+      </Delay>
+    </IfThenElse>
+  </BehaviorTree>
+
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
     <Action ID="Aspire"
             editable="true"/>
-    <Condition ID="CheckPhByDelta"
+    <Condition ID="CheckDphDv"
                editable="true">
-      <input_port name="delta_min"/>
-      <input_port name="delta_max"/>
-      <input_port name="window_sec"/>
+      <input_port name="criteria_min"/>
+      <input_port name="criteria_max"/>
     </Condition>
     <Condition ID="CheckPhByRange"
                editable="true">
@@ -134,9 +142,15 @@
     </Condition>
     <Action ID="Dispense"
             editable="true"/>
-    <Condition ID="IsPipetteEmpty"
-               editable="true"/>
+    <Condition ID="IsPhStable"
+               editable="true">
+      <input_port name="delta_min"/>
+      <input_port name="delta_max"/>
+      <input_port name="window_sec"/>
+    </Condition>
     <Condition ID="IsStateNormal"
+               editable="true"/>
+    <Condition ID="IsToReplenishPipette"
                editable="true"/>
     <Action ID="MovePose"
             editable="true">

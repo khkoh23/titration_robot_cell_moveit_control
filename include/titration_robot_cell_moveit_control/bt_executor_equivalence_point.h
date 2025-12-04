@@ -13,10 +13,11 @@
 #include <string>
 #include <stdexcept>
 
-#include "titration_robot_cell_moveit_control/check_ph_by_delta_condition.h"
+#include "titration_robot_cell_moveit_control/check_dph_dv_condition.h"
 #include "titration_robot_cell_moveit_control/check_ph_by_range_condition.h"
-#include "titration_robot_cell_moveit_control/is_pipette_empty_condition.h"
+#include "titration_robot_cell_moveit_control/is_ph_stable_condition.h"
 #include "titration_robot_cell_moveit_control/is_state_normal_condition.h"
+#include "titration_robot_cell_moveit_control/is_to_replenish_pipette_condition.h"
 #include "titration_robot_cell_moveit_control/aspire_action.h"
 #include "titration_robot_cell_moveit_control/dispense_action.h"
 #include "titration_robot_cell_moveit_control/move_pose_action.h"
@@ -34,21 +35,25 @@ public:
         blackboard_ = BT::Blackboard::create();
         auto shared_this = shared_from_this();
 
-        factory_.registerBuilder<CheckPhByDeltaCondition>("CheckPhByDelta", 
+        factory_.registerBuilder<CheckDphDvCondition>("CheckDphDv", 
             [&](const std::string& name, const BT::NodeConfiguration& config) {
-                return std::make_unique<CheckPhByDeltaCondition>(name, config, shared_this);
+                return std::make_unique<CheckDphDvCondition>(name, config, shared_this);
             });
         factory_.registerBuilder<CheckPhByRangeCondition>("CheckPhByRange", 
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<CheckPhByRangeCondition>(name, config, shared_this);
             });
-        factory_.registerBuilder<IsPipetteEmptyCondition>("IsPipetteEmpty", 
+        factory_.registerBuilder<IsPhStableCondition>("IsPhStable", 
             [&](const std::string& name, const BT::NodeConfiguration& config) {
-                return std::make_unique<IsPipetteEmptyCondition>(name, config, shared_this);
+                return std::make_unique<IsPhStableCondition>(name, config, shared_this);
             });
         factory_.registerBuilder<IsStateNormalCondition>("IsStateNormal", 
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<IsStateNormalCondition>(name, config, shared_this);
+            });
+        factory_.registerBuilder<IsToReplenishPipetteCondition>("IsToReplenishPipette", 
+            [&](const std::string& name, const BT::NodeConfiguration& config) {
+                return std::make_unique<IsToReplenishPipetteCondition>(name, config, shared_this);
             });
         factory_.registerBuilder<AspireAction>("Aspire",
             [&](const std::string& name, const BT::NodeConfiguration& config) {
@@ -68,7 +73,7 @@ public:
             });
         factory_.registerBuilder<SetDispenseVolumeAction>("SetDispenseVolume",
             [&](const std::string& name, const BT::NodeConfiguration& config) {
-                return std::make_unique<DispenseAction>(name, config, shared_this);
+                return std::make_unique<SetDispenseVolumeAction>(name, config, shared_this);
             });
         
         this->declare_parameter<std::string>("tree_xml_file", "");

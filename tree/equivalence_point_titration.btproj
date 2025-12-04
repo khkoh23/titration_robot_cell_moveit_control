@@ -4,18 +4,23 @@
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
         <Action ID="Aspire" editable="true"/>
-        <Condition ID="CheckPhByDelta" editable="true">
-            <input_port name="delta_min"/>
-            <input_port name="delta_max"/>
-            <input_port name="window_sec"/>
+        <Condition ID="CheckDphDv" editable="true">
+            <input_port name="criteria_min"/>
+            <input_port name="criteria_max"/>
         </Condition>
         <Condition ID="CheckPhByRange" editable="true">
             <input_port name="ph_min"/>
             <input_port name="ph_max"/>
         </Condition>
         <Action ID="Dispense" editable="true"/>
+        <Condition ID="IsPhStable" editable="true">
+            <input_port name="delta_min"/>
+            <input_port name="delta_max"/>
+            <input_port name="window_sec"/>
+        </Condition>
         <Condition ID="IsPipetteEmpty" editable="true"/>
         <Condition ID="IsStateNormal" editable="true"/>
+        <Condition ID="IsToReplenishPipette" editable="true"/>
         <Action ID="MovePose" editable="true">
             <input_port name="position_x"/>
             <input_port name="position_y"/>

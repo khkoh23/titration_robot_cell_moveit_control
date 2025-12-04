@@ -29,6 +29,12 @@ ament_target_dependencies(delta_ph_server
   std_msgs
   titration_robot_interfaces)
 
+add_executable(derivative_ph_volume_server src/derivative_ph_volume_server.cpp)
+ament_target_dependencies(derivative_ph_volume_server
+  rclcpp
+  std_msgs
+  titration_robot_interfaces)
+
 add_executable(move_pose_server src/move_pose_server.cpp)
 ament_target_dependencies(move_pose_server
   geometry_msgs
@@ -65,6 +71,7 @@ ament_target_dependencies(equivalence_point_titration_executor
 install(TARGETS 
   endpoint_titration_executor
   equivalence_point_titration_executor
+  derivative_ph_volume_server
   delta_ph_server
   pipette_server
   move_pose_server

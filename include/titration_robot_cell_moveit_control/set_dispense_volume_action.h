@@ -74,7 +74,7 @@ private:
     std::chrono::steady_clock::time_point start_time_{};
     std::string bt_node_name_;
 
-    uint16_t volume_;
+    uint16_t volume_{200};
 
 }; 
 

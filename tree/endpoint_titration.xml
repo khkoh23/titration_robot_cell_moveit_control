@@ -60,16 +60,16 @@
                     <IfThenElse>
                       <CheckPhByRange ph_min="5.01"
                                       ph_max="6.00"/>
-                      <Delay delay_msec="2500">
+                      <Delay delay_msec="5500">
                         <Dispense/>
                       </Delay>
                       <IfThenElse>
                         <CheckPhByRange ph_min="6.01"
                                         ph_max="6.50"/>
-                        <Delay delay_msec="5500">
+                        <Delay delay_msec="10500">
                           <Dispense/>
                         </Delay>
-                        <Delay delay_msec="8500">
+                        <Delay delay_msec="20500">
                           <Dispense/>
                         </Delay>
                       </IfThenElse>

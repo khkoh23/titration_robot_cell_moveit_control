@@ -112,20 +112,6 @@
     </Sequence>
   </BehaviorTree>
 
-  <BehaviorTree ID="test_and_discard">
-    <IfThenElse>
-      <IsPhStable delta_min="1.1"
-                  delta_max="2.0"
-                  window_sec="2"/>
-      <Sequence>
-        <SetDispenseVolume volume="50"/>
-      </Sequence>
-      <Delay delay_msec="2500">
-        <AlwaysSuccess/>
-      </Delay>
-    </IfThenElse>
-  </BehaviorTree>
-
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
     <Action ID="Aspire"

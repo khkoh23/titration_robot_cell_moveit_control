@@ -18,7 +18,6 @@
             <input_port name="delta_max"/>
             <input_port name="window_sec"/>
         </Condition>
-        <Condition ID="IsPipetteEmpty" editable="true"/>
         <Condition ID="IsStateNormal" editable="true"/>
         <Condition ID="IsToReplenishPipette" editable="true"/>
         <Action ID="MovePose" editable="true">

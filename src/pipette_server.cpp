@@ -52,7 +52,7 @@ private:
         pub->publish(msg);
     }
 
-    inline void help_publish_uint32(rclcpp::Publisher<std_msgs::msg::UInt32>::SharedPtr pub, uint16_t value) {
+    inline void help_publish_uint32(rclcpp::Publisher<std_msgs::msg::UInt32>::SharedPtr pub, uint32_t value) {
         std_msgs::msg::UInt32 msg;
         msg.data = value;
         pub->publish(msg);

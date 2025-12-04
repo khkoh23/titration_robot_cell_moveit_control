@@ -3,6 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
 #include <titration_robot_interfaces/action/move_pose.hpp>
+#include <moveit_msgs/msg/robot_trajectory.hpp>
 
 class MovePoseActionServer : public rclcpp::Node {
 public:
@@ -66,14 +67,25 @@ private:
         target.pose.orientation.x = goal->orientation_x;
         target.pose.orientation.y = goal->orientation_y;
         target.pose.orientation.z = goal->orientation_z;
-        move_group_interface_->setPoseTarget(target.pose);
+        // move_group_interface_->setPoseTarget(target.pose);
+
+        // --- Cartesian Path Planning Logic ---
+        std::vector<geometry_msgs::msg::Pose> waypoints;
+        waypoints.push_back(target.pose);
+        moveit_msgs::msg::RobotTrajectory trajectory;
+        const double eef_step = 0.01; // 1 cm
+        double fraction = move_group_interface_->computeCartesianPath(waypoints, eef_step, trajectory);
+        bool success = (fraction >= 0.9); // Define success: computing 90% or more of the requested path
         move_group_interface_->setMaxVelocityScalingFactor(0.5);
         move_group_interface_->setMaxAccelerationScalingFactor(0.5);
-        moveit::planning_interface::MoveGroupInterface::Plan plan;
-        bool success = (move_group_interface_->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
+        // moveit::planning_interface::MoveGroupInterface::Plan plan;
+        // bool success = (move_group_interface_->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
         if(success) {
-            RCLCPP_INFO(this->get_logger(), "Move group plan - Succeeded");
+            RCLCPP_INFO(this->get_logger(), "Cartesian path computed (%.2f%% covered) - Succeeded", fraction * 100.0);
+            // Wrap the computed trajectory in a Plan object for execution
+            moveit::planning_interface::MoveGroupInterface::Plan plan;
+            plan.trajectory = trajectory;
             moveit::core::MoveItErrorCode execute_success = move_group_interface_->execute(plan);
             if (execute_success == moveit::core::MoveItErrorCode::SUCCESS) {
                 RCLCPP_INFO(this->get_logger(), "Move group execute - Succeeded");
@@ -87,7 +99,7 @@ private:
             }
         }
         else {
-            RCLCPP_ERROR(this->get_logger(), "Move group plan - Failed");
+            RCLCPP_ERROR(this->get_logger(), "Cartesian path computation failed (%.2f%% covered)", fraction * 100.0);
             result->outcome = false;
             goal_handle->abort(result);
         }

@@ -76,6 +76,11 @@ private:
                 }
                 else RCLCPP_WARN(this->get_logger(), "Aspire volume is outside range 50 to 2000.");
                 break;
+            case 8:
+                holding_volume_ = 0;
+                help_publish_int8(pipette_cmd_pub_, 8);
+                RCLCPP_WARN(this->get_logger(), "Pipette cleared.");
+                break;
             case 9:
                 if (holding_volume_ >= dispense_volume_) {
                     holding_volume_ -= dispense_volume_;

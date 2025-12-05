@@ -19,6 +19,7 @@
 #include "titration_robot_cell_moveit_control/is_state_normal_condition.h"
 #include "titration_robot_cell_moveit_control/is_to_replenish_pipette_condition.h"
 #include "titration_robot_cell_moveit_control/aspire_action.h"
+#include "titration_robot_cell_moveit_control/clear_pipette_action.h"
 #include "titration_robot_cell_moveit_control/dispense_action.h"
 #include "titration_robot_cell_moveit_control/move_pose_action.h"
 #include "titration_robot_cell_moveit_control/move_state_action.h"
@@ -58,6 +59,10 @@ public:
         factory_.registerBuilder<AspireAction>("Aspire",
             [&](const std::string& name, const BT::NodeConfiguration& config) {
                 return std::make_unique<AspireAction>(name, config, shared_this);
+            });
+        factory_.registerBuilder<ClearPipetteAction>("ClearPipette",
+            [&](const std::string& name, const BT::NodeConfiguration& config) {
+                return std::make_unique<ClearPipetteAction>(name, config, shared_this);
             });
         factory_.registerBuilder<DispenseAction>("Dispense",
             [&](const std::string& name, const BT::NodeConfiguration& config) {

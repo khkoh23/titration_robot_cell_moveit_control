@@ -17,11 +17,20 @@
                     position_x="0.225"
                     position_y="-0.225"
                     position_z="1.100"/>
-          <MovePose name="MovePoseA2"
+          <MovePose name="MovePoseA3"
                     position_x="0.225"
                     position_y="-0.225"
-                    position_z="0.860"/>
-          <Aspire/>
+                    position_z="0.960"/>
+          <ClearPipette/>
+          <Delay delay_msec="2000">
+            <MovePose name="MovePoseA2"
+                      position_x="0.225"
+                      position_y="-0.225"
+                      position_z="0.860"/>
+          </Delay>
+          <Delay delay_msec="500">
+            <Aspire/>
+          </Delay>
           <Delay delay_msec="1000">
             <MovePose name="MovePoseA1"
                       position_x="0.225"
@@ -52,31 +61,31 @@
                 <Sequence>
                   <RetryUntilSuccessful num_attempts="-1">
                     <IsPhStable delta_min="0.00"
-                                delta_max="0.03"
+                                delta_max="0.02"
                                 window_sec="3"
                                 _description="If pH change is within 0.03 in the last 3 seconds (moving), then True."/>
                   </RetryUntilSuccessful>
                   <IfThenElse>
-                    <CheckDphDv criteria_min="0.0000"
-                                criteria_max="0.0005"
-                                _description="dpH / dV:&#10;If pH change is within 0.1 when volume of 200 (20uL) was added, then True."/>
+                    <CheckDphDv criteria_min="0.00000"
+                                criteria_max="0.00025"
+                                _description="dpH / dV:&#10;If pH change is within 0.05 when volume of 200 was added, then True."/>
                     <Sequence>
                       <SetDispenseVolume volume="200"/>
                       <SetBlackboard value="500"
                                      output_key="delay"/>
                     </Sequence>
                     <IfThenElse>
-                      <CheckDphDv criteria_min="0.0006"
-                                  criteria_max="0.0010"
-                                  _description="dpH / dV:&#10;If pH change is below 0.1 when volume of 100 (10uL) was added, then True."/>
+                      <CheckDphDv criteria_min="0.00026"
+                                  criteria_max="0.00050"
+                                  _description="dpH / dV:&#10;If pH change is below 0.05 when volume of 100 was added, then True."/>
                       <Sequence>
                         <SetDispenseVolume volume="100"/>
-                        <SetBlackboard value="2500"
+                        <SetBlackboard value="3500"
                                        output_key="delay"/>
                       </Sequence>
                       <Sequence>
                         <SetDispenseVolume volume="50"/>
-                        <SetBlackboard value="4500"
+                        <SetBlackboard value="6500"
                                        output_key="delay"/>
                       </Sequence>
                     </IfThenElse>
@@ -126,6 +135,8 @@
       <input_port name="ph_min"/>
       <input_port name="ph_max"/>
     </Condition>
+    <Action ID="ClearPipette"
+            editable="true"/>
     <Action ID="Dispense"
             editable="true"/>
     <Condition ID="IsPhStable"

@@ -12,6 +12,7 @@
             <input_port name="ph_min"/>
             <input_port name="ph_max"/>
         </Condition>
+        <Action ID="ClearPipette" editable="true"/>
         <Action ID="Dispense" editable="true"/>
         <Condition ID="IsPhStable" editable="true">
             <input_port name="delta_min"/>

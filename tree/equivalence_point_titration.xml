@@ -62,30 +62,30 @@
                   <RetryUntilSuccessful num_attempts="-1">
                     <IsPhStable delta_min="0.00"
                                 delta_max="0.02"
-                                window_sec="5"
-                                _description="If pH change is within 0.02 in the last 5 seconds (moving), then True."/>
+                                window_sec="30"
+                                _description="If pH change is within 0.02 in the last 30 seconds, then True."/>
                   </RetryUntilSuccessful>
                   <IfThenElse>
-                    <CheckDphDv criteria_min="0.00000"
-                                criteria_max="0.00025"
-                                _description="dpH / dV:&#10;If pH change is within 0.05 when volume of 200 was added, then True."/>
+                    <CheckDphDv criteria_min="0.0000"
+                                criteria_max="0.0005"
+                                _description="dpH / dV:&#10;If 0 &lt;= pH change &lt; 0.005 when volume of 10 was added, then True."/>
                     <Sequence>
-                      <SetDispenseVolume volume="200"/>
-                      <SetBlackboard value="500"
+                      <SetDispenseVolume volume="400"/>
+                      <SetBlackboard value="1500"
                                      output_key="delay"/>
                     </Sequence>
                     <IfThenElse>
-                      <CheckDphDv criteria_min="0.00026"
-                                  criteria_max="0.00050"
-                                  _description="dpH / dV:&#10;If pH change is below 0.05 when volume of 100 was added, then True."/>
+                      <CheckDphDv criteria_min="0.0005"
+                                  criteria_max="0.0010"
+                                  _description="dpH / dV:&#10;If 0.005 &lt;= pH change &lt; 0.0010 when volume of 10 was added, then True."/>
                       <Sequence>
-                        <SetDispenseVolume volume="150"/>
-                        <SetBlackboard value="3500"
+                        <SetDispenseVolume volume="200"/>
+                        <SetBlackboard value="1500"
                                        output_key="delay"/>
                       </Sequence>
                       <Sequence>
                         <SetDispenseVolume volume="100"/>
-                        <SetBlackboard value="6500"
+                        <SetBlackboard value="1500"
                                        output_key="delay"/>
                       </Sequence>
                     </IfThenElse>

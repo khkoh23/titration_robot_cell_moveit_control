@@ -13,23 +13,16 @@ public:
     explicit PipetteServiceServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
     : Node("pipette_server", options) {
         using namespace std::placeholders;
-        pipette_cmd_pub_ = this->create_publisher<std_msgs::msg::Int8>("pipette_cmd", 
-            rclcpp::QoS(10).reliable());
-        pipette_set_vol_pub_ = this->create_publisher<std_msgs::msg::UInt16>("pipette_set_vol", 
-            rclcpp::QoS(1).reliable().transient_local());
-        pipette_step_vol_pub_ = this->create_publisher<std_msgs::msg::UInt16>("pipette_step_vol", 
-            rclcpp::QoS(1).reliable().transient_local());
-        titration_vol_pub_ = this->create_publisher<std_msgs::msg::UInt32>("titration_vol", 
-            rclcpp::QoS(1).reliable().transient_local());
-        this->service_server_ = this->create_service<Pipette>(
-            "pipette", 
-            std::bind(&PipetteServiceServer::handle_request, this, _1, _2)
-        );
+        pipette_cmd_pub_ = this->create_publisher<std_msgs::msg::Int8>("pipette_cmd", rclcpp::QoS(10).reliable()); 
+        pipette_set_vol_pub_ = this->create_publisher<std_msgs::msg::UInt16>("pipette_set_vol", rclcpp::QoS(1).reliable().transient_local());
+        pipette_step_vol_pub_ = this->create_publisher<std_msgs::msg::UInt16>("pipette_step_vol", rclcpp::QoS(1).reliable().transient_local());
+        titration_vol_pub_ = this->create_publisher<std_msgs::msg::UInt32>("titration_vol", rclcpp::QoS(1).reliable().transient_local());
+        this->service_ = this->create_service<Pipette>("pipette", std::bind(&PipetteServiceServer::handle_request, this, _1, _2));
         RCLCPP_INFO(this->get_logger(), "Pipette service server started.");
     }
 
 private:
-    rclcpp::Service<Pipette>::SharedPtr service_server_;
+    rclcpp::Service<Pipette>::SharedPtr service_;
     rclcpp::Publisher<std_msgs::msg::Int8>::SharedPtr pipette_cmd_pub_;
     rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr pipette_set_vol_pub_;
     rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr pipette_step_vol_pub_;
@@ -123,7 +116,6 @@ private:
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
-    // rclcpp::ExecutorOptions options;
     rclcpp::NodeOptions node_options;
     node_options.automatically_declare_parameters_from_overrides(true);
     auto service_server = std::make_shared<PipetteServiceServer>(node_options);

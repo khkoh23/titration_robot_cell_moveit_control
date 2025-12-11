@@ -36,7 +36,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "Received goal request with target position (%.3f, %.3f, %.3f)",
         goal->position_x, goal->position_y, goal->position_z);
         (void)uuid;
-        if (goal->position_x > 0.9) { // To add goal reject criteria
+        if (goal->position_x > 0.9) { // TODO: Check goal reject criteria
             return rclcpp_action::GoalResponse::REJECT;
         }
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
@@ -67,8 +67,6 @@ private:
         target.pose.orientation.x = goal->orientation_x;
         target.pose.orientation.y = goal->orientation_y;
         target.pose.orientation.z = goal->orientation_z;
-        // move_group_interface_->setPoseTarget(target.pose);
-
         // --- Cartesian Path Planning Logic ---
         std::vector<geometry_msgs::msg::Pose> waypoints;
         waypoints.push_back(target.pose);
@@ -78,12 +76,8 @@ private:
         bool success = (fraction >= 0.9); // Define success: computing 90% or more of the requested path
         move_group_interface_->setMaxVelocityScalingFactor(0.5);
         move_group_interface_->setMaxAccelerationScalingFactor(0.5);
-        // moveit::planning_interface::MoveGroupInterface::Plan plan;
-        // bool success = (move_group_interface_->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-
         if(success) {
             RCLCPP_INFO(this->get_logger(), "Cartesian path computed (%.2f%% covered) - Succeeded", fraction * 100.0);
-            // Wrap the computed trajectory in a Plan object for execution
             moveit::planning_interface::MoveGroupInterface::Plan plan;
             plan.trajectory = trajectory;
             moveit::core::MoveItErrorCode execute_success = move_group_interface_->execute(plan);
@@ -103,7 +97,7 @@ private:
             result->outcome = false;
             goal_handle->abort(result);
         }
-        // TODO: publish feedback
+        // TODO: Publish feedback
     }
 
 };  // class MovePoseActionServer

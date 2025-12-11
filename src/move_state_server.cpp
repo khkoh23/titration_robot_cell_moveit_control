@@ -36,9 +36,8 @@ private:
         const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const MoveState::Goal> goal) {
         RCLCPP_INFO(this->get_logger(), "Received goal request with target named (%s)", goal->group_state.c_str());
         (void)uuid;
-        // if ((goal->group_state != home) || (goal->group_state != normal)) { // To add goal reject criteria
-        //     return rclcpp_action::GoalResponse::REJECT;
-        // }
+        // TODO: Add goal reject criteria
+        // return rclcpp_action::GoalResponse::REJECT;
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
     }
 
@@ -63,7 +62,6 @@ private:
         move_group_interface_->setMaxAccelerationScalingFactor(0.5);
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         bool success = (move_group_interface_->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-
         if(success) {
             RCLCPP_INFO(this->get_logger(), "Move group plan - Succeeded");
             moveit::core::MoveItErrorCode execute_success = move_group_interface_->execute(plan);
@@ -83,7 +81,7 @@ private:
             result->outcome = false;
             goal_handle->abort(result);
         }
-        // TODO: publish feedback
+        // TODO: Publish feedback
     }
 
 };  // class MoveStateActionServer

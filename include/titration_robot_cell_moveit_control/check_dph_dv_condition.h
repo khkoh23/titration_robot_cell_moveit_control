@@ -48,7 +48,7 @@ public:
                 const float hv = static_cast<float>(resp_msg.dph_dv);
                 RCLCPP_DEBUG(node_->get_logger(), "[%s] Fresh server response: dph_dv=%.6f.", bt_node_name_.c_str(), hv);
                 // Logic
-                if (abs(hv) >= criteria_min_ && abs(hv) <= criteria_max_) {
+                if (abs(hv) >= criteria_min_ && abs(hv) < criteria_max_) {
                     RCLCPP_INFO(node_->get_logger(), "[%s] Derivative is within the criteria.", name().c_str());
                     return BT::NodeStatus::SUCCESS;
                 }

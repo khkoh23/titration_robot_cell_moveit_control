@@ -62,7 +62,7 @@
                   <RetryUntilSuccessful num_attempts="-1">
                     <IsPhStable delta_min="0.00"
                                 delta_max="0.02"
-                                window_sec="30"
+                                window_sec="40"
                                 _description="If pH change is within 0.02 in the last 30 seconds, then True."/>
                   </RetryUntilSuccessful>
                   <IfThenElse>
@@ -76,8 +76,8 @@
                     </Sequence>
                     <IfThenElse>
                       <CheckDphDv criteria_min="0.0005"
-                                  criteria_max="0.0010"
-                                  _description="dpH / dV:&#10;If 0.005 &lt;= pH change &lt; 0.0010 when volume of 10 was added, then True."/>
+                                  criteria_max="0.0020"
+                                  _description="dpH / dV:&#10;If 0.005 &lt;= pH change &lt; 0.02 when volume of 10 was added, then True."/>
                       <Sequence>
                         <SetDispenseVolume volume="200"/>
                         <SetBlackboard value="1500"
@@ -92,6 +92,9 @@
                   </IfThenElse>
                   <Delay delay_msec="{delay}">
                     <Dispense/>
+                  </Delay>
+                  <Delay delay_msec="10000">
+                    <AlwaysSuccess/>
                   </Delay>
                   <IsToReplenishPipette/>
                 </Sequence>

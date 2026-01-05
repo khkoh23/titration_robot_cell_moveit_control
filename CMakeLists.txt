@@ -17,12 +17,6 @@ find_package(titration_robot_interfaces REQUIRED)
 
 include_directories(include)
 
-add_executable(pipette_server src/pipette_server.cpp)
-ament_target_dependencies(pipette_server
-  rclcpp
-  std_msgs
-  titration_robot_interfaces)
-
 add_executable(delta_ph_server src/delta_ph_server.cpp)
 ament_target_dependencies(delta_ph_server
   rclcpp
@@ -33,21 +27,6 @@ add_executable(derivative_ph_volume_server src/derivative_ph_volume_server.cpp)
 ament_target_dependencies(derivative_ph_volume_server
   rclcpp
   std_msgs
-  titration_robot_interfaces)
-
-add_executable(move_pose_server src/move_pose_server.cpp)
-ament_target_dependencies(move_pose_server
-  geometry_msgs
-  moveit_ros_planning_interface
-  rclcpp
-  rclcpp_action
-  titration_robot_interfaces)
-
-add_executable(move_state_server src/move_state_server.cpp)
-ament_target_dependencies(move_state_server
-  moveit_ros_planning_interface
-  rclcpp
-  rclcpp_action
   titration_robot_interfaces)
 
 add_executable(endpoint_titration_executor 
@@ -68,14 +47,35 @@ ament_target_dependencies(equivalence_point_titration_executor
   sensor_msgs
   titration_robot_interfaces)
 
+add_executable(move_pose_server src/move_pose_server.cpp)
+ament_target_dependencies(move_pose_server
+  geometry_msgs
+  moveit_ros_planning_interface
+  rclcpp
+  rclcpp_action
+  titration_robot_interfaces)
+
+add_executable(move_state_server src/move_state_server.cpp)
+ament_target_dependencies(move_state_server
+  moveit_ros_planning_interface
+  rclcpp
+  rclcpp_action
+  titration_robot_interfaces)
+
+add_executable(pipette_server src/pipette_server.cpp)
+ament_target_dependencies(pipette_server
+  rclcpp
+  std_msgs
+  titration_robot_interfaces)
+
 install(TARGETS 
+  delta_ph_server
+  derivative_ph_volume_server
   endpoint_titration_executor
   equivalence_point_titration_executor
-  derivative_ph_volume_server
-  delta_ph_server
-  pipette_server
   move_pose_server
   move_state_server
+  pipette_server
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY

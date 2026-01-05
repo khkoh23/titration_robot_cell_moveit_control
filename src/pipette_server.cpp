@@ -69,7 +69,7 @@ private:
                 }
                 else RCLCPP_WARN(this->get_logger(), "Aspire volume is outside range 50 to 2000.");
                 break;
-            case 8:
+            case 8: // Clear pipette
                 holding_volume_ = 0;
                 help_publish_int8(pipette_cmd_pub_, 8);
                 RCLCPP_WARN(this->get_logger(), "Pipette cleared.");
